@@ -5,15 +5,118 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width,  initial-scale=1.0,  maximum-scale=1.0,  user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>AR - Vídeo na Track</title>
 
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    
+
+
+    <style>
+
+        /* =================================================
+           BOTÃO DO VÍDEO
+        ================================================= */
+
+        #btnIniciar {
+
+            position: fixed;
+
+            bottom: 30px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 9999;
+
+            display: none;
+
+            padding: 15px 30px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            background: white;
+
+            color: black;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        #btnIniciar:active {
+
+            transform: translateX(-50%) scale(0.95);
+
+        }
+
+
+        /* =================================================
+           MENSAGEM
+        ================================================= */
+
+        #mensagem {
+
+            position: fixed;
+
+            top: 20px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 9999;
+
+            padding: 10px 20px;
+
+            border-radius: 20px;
+
+            background: rgba(0, 0, 0, 0.7);
+
+            color: white;
+
+            font-size: 15px;
+
+            text-align: center;
+
+        }
+
+    </style>
+
 </head>
-<body>  
+
+
+<body>
+
+
+    <!-- =================================================
+         MENSAGEM
+    ================================================= -->
+
+    <div id="mensagem">
+
+        Aponte a câmera para a imagem
+
+    </div>
+
+
+    <!-- =================================================
+         BOTÃO INICIAR VÍDEO
+    ================================================= -->
+
+    <button id="btnIniciar">
+
+        ▶ INICIAR VÍDEO
+
+    </button>
 
 
     <!-- =================================================
@@ -21,11 +124,19 @@
     ================================================= -->
 
     <a-scene
-      mindar-image="imageTargetSrc: Imagens/targets.mind;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false">
+
+        id="cena"
+
+        mindar-image="imageTargetSrc: Imagens/targets.mind;"
+
+        color-space="sRGB"
+
+        renderer="colorManagement: true, physicallyCorrectLights"
+
+        vr-mode-ui="enabled: false"
+
+        device-orientation-permission-ui="enabled: false">
+
 
         <!-- =================================================
              ASSETS
@@ -33,7 +144,7 @@
 
         <a-assets>
 
-            <video id="videoAR" src="videos/video.mp4"  preload="auto" autoplay playsinline  webkit-playsinline  crossorigin="anonymous"></video>                
+            <video  id="videoAR" src="videos/video.mp4"  preload="auto" playsinline  webkit-playsinline crossorigin="anonymous"></video>
 
         </a-assets>
 
@@ -42,14 +153,51 @@
              CÂMERA
         ================================================= -->
 
-        <a-camera  position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera
+
+            position="0 0 0"
+
+            look-controls="enabled: false">
+
+        </a-camera>
+
 
         <!-- =================================================
              TRACK
         ================================================= -->
 
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-video id="videoPlane" src="#videoAR" position="0 0 0.01"  rotation="0 0 0"  width="1"  height="1.5" material="shader: flat; side: double;"></a-video>
+        <a-entity
+
+            id="track"
+
+            mindar-image-target="targetIndex: 0">
+
+
+            <!-- =================================================
+                 VÍDEO
+            ================================================= -->
+
+            <a-video
+
+                id="videoPlane"
+
+                src="#videoAR"
+
+                position="0 0 0.01"
+
+                rotation="0 0 0"
+
+                width="1"
+
+                height="1.5"
+
+                material="shader: flat; side: double;"
+
+                visible="false">
+
+            </a-video>
+
+
         </a-entity>
 
 
@@ -70,20 +218,22 @@
         const cena =
             document.querySelector("#cena");
 
+
         const track =
             document.querySelector("#track");
+
 
         const video =
             document.querySelector("#videoAR");
 
+
         const videoPlane =
             document.querySelector("#videoPlane");
+
 
         const btnIniciar =
             document.querySelector("#btnIniciar");
 
-        const inicio =
-            document.querySelector("#inicio");
 
         const mensagem =
             document.querySelector("#mensagem");
@@ -96,6 +246,8 @@
         let experienciaIniciada = false;
 
         let trackEncontrada = false;
+
+        let videoIniciado = false;
 
 
         // ====================================================
@@ -115,83 +267,58 @@
 
 
         // ====================================================
-        // BOTÃO INICIAR
+        // BOTÃO INICIAR VÍDEO
         // ====================================================
 
         btnIniciar.addEventListener(
             "click",
-            async function () {
+            function () {
 
                 console.log(
-                    "Iniciando experiência..."
+                    "Botão iniciar vídeo pressionado."
                 );
 
 
-                experienciaIniciada = true;
+                // =============================================
+                // MARCA QUE O USUÁRIO INICIOU O VÍDEO
+                // =============================================
+
+                videoIniciado = true;
 
 
-                // Esconde tela inicial
+                // =============================================
+                // REPRODUZ O VÍDEO
+                // =============================================
 
-                inicio.style.display =
+                video.play()
+                    .then(function () {
+
+                        console.log(
+                            "Vídeo iniciado."
+                        );
+
+                    })
+                    .catch(function (erro) {
+
+                        console.warn(
+                            "Erro ao iniciar vídeo:",
+                            erro
+                        );
+
+                    });
+
+
+                // =============================================
+                // ESCONDE O BOTÃO
+                // =============================================
+
+                btnIniciar.style.display =
                     "none";
 
 
                 mensagem.innerHTML =
-                    "Iniciando câmera...";
+                    "Vídeo reproduzindo";
 
-
-                try {
-
-
-                    // =========================================
-                    // SISTEMA MINDAR
-                    // =========================================
-
-                    const sistemaMindAR =
-                        cena.systems[
-                            "mindar-image-system"
-                        ];
-
-
-                    if (!sistemaMindAR) {
-
-                        throw new Error(
-                            "Sistema MindAR não encontrado."
-                        );
-
-                    }
-
-
-                    // =========================================
-                    // INICIA MINDAR
-                    // =========================================
-
-                    await sistemaMindAR.start();
-
-
-                    console.log(
-                        "MindAR iniciado."
-                    );
-
-
-                    mensagem.innerHTML =
-                        "Aponte a câmera para a imagem";
-
-
-                }
-
-                catch (erro) {
-
-                    console.error(
-                        "Erro ao iniciar MindAR:",
-                        erro
-                    );
-
-
-                    mensagem.innerHTML =
-                        "Erro ao iniciar a câmera.";
-
-                }
 
             }
         );
@@ -242,45 +369,72 @@
 
 
                 // =============================================
-                // REINICIA VÍDEO
+                // SE O VÍDEO JÁ FOI INICIADO PELO USUÁRIO
                 // =============================================
 
-                video.currentTime = 0;
+                if (videoIniciado) {
 
 
-                // =============================================
-                // REPRODUZ
-                // =============================================
-
-                const promessa =
-                    video.play();
+                    console.log(
+                        "Continuando vídeo."
+                    );
 
 
-                if (promessa !== undefined) {
+                    // Continua exatamente
+                    // do ponto em que parou
 
-                    promessa
+                    video.play()
                         .then(function () {
 
                             console.log(
-                                "Vídeo iniciado."
+                                "Vídeo continuando."
                             );
 
                         })
                         .catch(function (erro) {
 
                             console.warn(
-                                "Não foi possível reproduzir:",
+                                "Não foi possível continuar:",
                                 erro
                             );
 
                         });
 
+
+                    mensagem.innerHTML =
+                        "Vídeo reproduzindo";
+
+
                 }
 
+                else {
 
-                mensagem.innerHTML =
-                    "Track reconhecida!";
 
+                    // =========================================
+                    // PRIMEIRA VEZ QUE A TRACK É ENCONTRADA
+                    // =========================================
+
+                    console.log(
+                        "Aguardando usuário iniciar o vídeo."
+                    );
+
+
+                    // O vídeo fica pausado
+
+                    video.pause();
+
+
+                    // Mostra o botão
+
+                    btnIniciar.style.display =
+                        "block";
+
+
+                    mensagem.innerHTML =
+                        "Track reconhecida";
+
+
+                }
 
             }
         );
@@ -295,7 +449,15 @@
             function () {
 
                 console.log(
+                    "================================"
+                );
+
+                console.log(
                     "TRACK PERDIDA!"
+                );
+
+                console.log(
+                    "================================"
                 );
 
 
@@ -313,17 +475,30 @@
 
 
                 // =============================================
-                // PAUSA
+                // PAUSA O VÍDEO
                 // =============================================
 
                 video.pause();
 
 
                 // =============================================
-                // VOLTA PARA O INÍCIO
+                // NÃO ALTERAMOS video.currentTime
+                // =============================================
+                //
+                // Isso é MUITO importante.
+                //
+                // O vídeo permanece exatamente no ponto
+                // onde estava quando a track foi perdida.
+                //
                 // =============================================
 
-                video.currentTime = 0;
+
+                // =============================================
+                // ESCONDE O BOTÃO
+                // =============================================
+
+                btnIniciar.style.display =
+                    "none";
 
 
                 mensagem.innerHTML =
@@ -346,12 +521,36 @@
                     "Vídeo terminou."
                 );
 
+
+                // =============================================
+                // MARCA COMO NÃO INICIADO
+                // =============================================
+
+                videoIniciado = false;
+
+
+                // =============================================
+                // SE A TRACK AINDA ESTIVER PRESENTE
+                // MOSTRA O BOTÃO NOVAMENTE
+                // =============================================
+
+                if (trackEncontrada) {
+
+                    btnIniciar.style.display =
+                        "block";
+
+
+                    mensagem.innerHTML =
+                        "Vídeo finalizado";
+
+                }
+
             }
         );
 
 
         // ====================================================
-        // ERROS DO VÍDEO
+        // ERRO NO VÍDEO
         // ====================================================
 
         video.addEventListener(
@@ -362,6 +561,7 @@
                     "Erro no vídeo:",
                     erro
                 );
+
 
                 mensagem.innerHTML =
                     "Erro ao carregar o vídeo.";
