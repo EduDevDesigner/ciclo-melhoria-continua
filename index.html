@@ -8,95 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>AR - Vídeo na Track</title>
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-
-    <style>
-
-        /* =================================================
-           BOTÃO DO VÍDEO
-        ================================================= */
-
-        #btnIniciar {
-
-            position: fixed;
-
-            bottom: 30px;
-
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            z-index: 9999;
-
-            display: none;
-
-            padding: 15px 30px;
-
-            border: none;
-
-            border-radius: 30px;
-
-            background: white;
-
-            color: black;
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-        #btnIniciar:active {
-
-            transform: translateX(-50%) scale(0.95);
-
-        }
-
-
-        /* =================================================
-           MENSAGEM
-        ================================================= */
-
-        #mensagem {
-
-            position: fixed;
-
-            top: 20px;
-
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            z-index: 9999;
-
-            padding: 10px 20px;
-
-            border-radius: 20px;
-
-            background: rgba(0, 0, 0, 0.7);
-
-            color: white;
-
-            font-size: 15px;
-
-            text-align: center;
-
-        }
-
-    </style>
-
 </head>
-
-
 <body>
-
-
     <!-- =================================================
          MENSAGEM
     ================================================= -->
@@ -106,8 +24,6 @@
         Aponte a câmera para a imagem
 
     </div>
-
-
     <!-- =================================================
          BOTÃO INICIAR VÍDEO
     ================================================= -->
@@ -118,11 +34,9 @@
 
     </button>
 
-
     <!-- =================================================
          CENA A-FRAME
     ================================================= -->
-
     <a-scene
 
         id="cena"
@@ -133,7 +47,7 @@
 
         renderer="colorManagement: true, physicallyCorrectLights"
 
-        vr-mode-ui="enabled: false"
+        xr-mode-ui="enabled:false"
 
         device-orientation-permission-ui="enabled: false">
 
