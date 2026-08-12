@@ -1,0 +1,73 @@
+/* =================================================
+           BOTÃO DO VÍDEO
+        ================================================= */
+
+        #btnIniciar {
+
+            position: fixed;
+
+            bottom: 30px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 9999;
+
+            display: none;
+
+            padding: 15px 30px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            background: white;
+
+            color: black;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        #btnIniciar:active {
+
+            transform: translateX(-50%) scale(0.95);
+
+        }
+
+
+        /* =================================================
+           MENSAGEM
+        ================================================= */
+
+        #mensagem {
+
+            position: fixed;
+
+            top: 20px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 9999;
+
+            padding: 10px 20px;
+
+            border-radius: 20px;
+
+            background: rgba(0, 0, 0, 0.7);
+
+            color: white;
+
+            font-size: 15px;
+
+            text-align: center;
+
+        }
