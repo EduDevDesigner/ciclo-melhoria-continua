@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,  initial-scale=1.0,  maximum-scale=1.0,  user-scalable=no">
+
+    <title>AR - Vídeo na Track</title>
+
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    
+</head>
+<body>  
+
+
+    <!-- =================================================
+         CENA A-FRAME
+    ================================================= -->
+
+    <a-scene
+      mindar-image="imageTargetSrc: Imagens/targets.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
+        <!-- =================================================
+             ASSETS
+        ================================================= -->
+
+        <a-assets>
+
+            <video id="videoAR" src="videos/video.mp4"  preload="auto" autoplay playsinline  webkit-playsinline  crossorigin="anonymous"></video>                
+
+        </a-assets>
+
+
+        <!-- =================================================
+             CÂMERA
+        ================================================= -->
+
+        <a-camera  position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- =================================================
+             TRACK
+        ================================================= -->
+
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-video id="videoPlane" src="#videoAR" position="0 0 0.01"  rotation="0 0 0"  width="1"  height="1.5" material="shader: flat; side: double;"></a-video>
+        </a-entity>
+
+
+    </a-scene>
+
+
+    <!-- =================================================
+         JAVASCRIPT
+    ================================================= -->
+
+    <script>
+
+
+        // ====================================================
+        // ELEMENTOS
+        // ====================================================
+
+        const cena =
+            document.querySelector("#cena");
+
+        const track =
+            document.querySelector("#track");
+
+        const video =
+            document.querySelector("#videoAR");
+
+        const videoPlane =
+            document.querySelector("#videoPlane");
+
+        const btnIniciar =
+            document.querySelector("#btnIniciar");
+
+        const inicio =
+            document.querySelector("#inicio");
+
+        const mensagem =
+            document.querySelector("#mensagem");
+
+
+        // ====================================================
+        // ESTADO
+        // ====================================================
+
+        let experienciaIniciada = false;
+
+        let trackEncontrada = false;
+
+
+        // ====================================================
+        // CENA CARREGADA
+        // ====================================================
+
+        cena.addEventListener(
+            "loaded",
+            function () {
+
+                console.log(
+                    "A-Frame carregado."
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // BOTÃO INICIAR
+        // ====================================================
+
+        btnIniciar.addEventListener(
+            "click",
+            async function () {
+
+                console.log(
+                    "Iniciando experiência..."
+                );
+
+
+                experienciaIniciada = true;
+
+
+                // Esconde tela inicial
+
+                inicio.style.display =
+                    "none";
+
+
+                mensagem.innerHTML =
+                    "Iniciando câmera...";
+
+
+                try {
+
+
+                    // =========================================
+                    // SISTEMA MINDAR
+                    // =========================================
+
+                    const sistemaMindAR =
+                        cena.systems[
+                            "mindar-image-system"
+                        ];
+
+
+                    if (!sistemaMindAR) {
+
+                        throw new Error(
+                            "Sistema MindAR não encontrado."
+                        );
+
+                    }
+
+
+                    // =========================================
+                    // INICIA MINDAR
+                    // =========================================
+
+                    await sistemaMindAR.start();
+
+
+                    console.log(
+                        "MindAR iniciado."
+                    );
+
+
+                    mensagem.innerHTML =
+                        "Aponte a câmera para a imagem";
+
+
+                }
+
+                catch (erro) {
+
+                    console.error(
+                        "Erro ao iniciar MindAR:",
+                        erro
+                    );
+
+
+                    mensagem.innerHTML =
+                        "Erro ao iniciar a câmera.";
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // TRACK ENCONTRADA
+        // ====================================================
+
+        track.addEventListener(
+            "targetFound",
+            function () {
+
+                console.log(
+                    "================================"
+                );
+
+                console.log(
+                    "TRACK ENCONTRADA!"
+                );
+
+                console.log(
+                    "================================"
+                );
+
+
+                trackEncontrada = true;
+
+
+                // =============================================
+                // MOSTRA VÍDEO
+                // =============================================
+
+                videoPlane.setAttribute(
+                    "visible",
+                    "true"
+                );
+
+
+                // =============================================
+                // POSIÇÃO
+                // =============================================
+
+                videoPlane.setAttribute(
+                    "position",
+                    "0 0 0.01"
+                );
+
+
+                // =============================================
+                // REINICIA VÍDEO
+                // =============================================
+
+                video.currentTime = 0;
+
+
+                // =============================================
+                // REPRODUZ
+                // =============================================
+
+                const promessa =
+                    video.play();
+
+
+                if (promessa !== undefined) {
+
+                    promessa
+                        .then(function () {
+
+                            console.log(
+                                "Vídeo iniciado."
+                            );
+
+                        })
+                        .catch(function (erro) {
+
+                            console.warn(
+                                "Não foi possível reproduzir:",
+                                erro
+                            );
+
+                        });
+
+                }
+
+
+                mensagem.innerHTML =
+                    "Track reconhecida!";
+
+
+            }
+        );
+
+
+        // ====================================================
+        // TRACK PERDIDA
+        // ====================================================
+
+        track.addEventListener(
+            "targetLost",
+            function () {
+
+                console.log(
+                    "TRACK PERDIDA!"
+                );
+
+
+                trackEncontrada = false;
+
+
+                // =============================================
+                // ESCONDE VÍDEO
+                // =============================================
+
+                videoPlane.setAttribute(
+                    "visible",
+                    "false"
+                );
+
+
+                // =============================================
+                // PAUSA
+                // =============================================
+
+                video.pause();
+
+
+                // =============================================
+                // VOLTA PARA O INÍCIO
+                // =============================================
+
+                video.currentTime = 0;
+
+
+                mensagem.innerHTML =
+                    "Aponte a câmera para a imagem";
+
+
+            }
+        );
+
+
+        // ====================================================
+        // VÍDEO TERMINOU
+        // ====================================================
+
+        video.addEventListener(
+            "ended",
+            function () {
+
+                console.log(
+                    "Vídeo terminou."
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // ERROS DO VÍDEO
+        // ====================================================
+
+        video.addEventListener(
+            "error",
+            function (erro) {
+
+                console.error(
+                    "Erro no vídeo:",
+                    erro
+                );
+
+                mensagem.innerHTML =
+                    "Erro ao carregar o vídeo.";
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>
